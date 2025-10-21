@@ -85,7 +85,7 @@ erDiagram
     DATETIME(6) created_at
     DATETIME(6) updated_at
   }
-  NEWSLETTER_SUBSCRIBERS }o--|| USERS : (user_id)
+  NEWSLETTER_SUBSCRIBERS }o--|| USERS : "user_id"
 ```
 
 ## Indexes
