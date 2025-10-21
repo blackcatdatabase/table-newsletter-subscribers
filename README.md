@@ -2,7 +2,7 @@
 
 ![SQL](https://img.shields.io/badge/SQL-MySQL%208.0%2B-4479A1?logo=mysql&logoColor=white) ![License](https://img.shields.io/badge/license-BlackCat%20Proprietary-red) ![Status](https://img.shields.io/badge/status-stable-informational) ![Generated](https://img.shields.io/badge/generated-from%20schema--map-blue)
 
-> Schema package for table **newsletter_subscribers** (repo: $slug).
+> Schema package for table **newsletter_subscribers** (repo: `newsletter-subscribers`).
 
 ## Files
 ```
@@ -64,26 +64,26 @@ mysql -h 127.0.0.1 -P 3307 -u root -proot app < schema/030_foreign_keys.sql
 ```mermaid
 erDiagram
   NEWSLETTER_SUBSCRIBERS {
-    BIGINT id PK
-    BIGINT user_id
-    BINARY(32) email_hash
-    VARCHAR(64) email_hash_key_version
-    LONGBLOB email_enc
-    VARCHAR(64) email_key_version
-    CHAR(12) confirm_selector
-    BINARY(32) confirm_validator_hash
-    VARCHAR(64) confirm_key_version
-    DATETIME(6) confirm_expires
-    DATETIME(6) confirmed_at
-    BINARY(32) unsubscribe_token_hash
-    VARCHAR(64) unsubscribe_token_key_version
-    DATETIME(6) unsubscribed_at
-    VARCHAR(100) origin
-    BINARY(32) ip_hash
-    VARCHAR(64) ip_hash_key_version
+    INT id PK
+    INT user_id
+    BLOB email_hash
+    VARCHAR email_hash_key_version
+    BLOB email_enc
+    VARCHAR email_key_version
+    VARCHAR confirm_selector
+    BLOB confirm_validator_hash
+    VARCHAR confirm_key_version
+    DATETIME confirm_expires
+    DATETIME confirmed_at
+    BLOB unsubscribe_token_hash
+    VARCHAR unsubscribe_token_key_version
+    DATETIME unsubscribed_at
+    VARCHAR origin
+    BLOB ip_hash
+    VARCHAR ip_hash_key_version
     JSON meta
-    DATETIME(6) created_at
-    DATETIME(6) updated_at
+    DATETIME created_at
+    DATETIME updated_at
   }
   NEWSLETTER_SUBSCRIBERS }o--|| USERS : "user_id"
 ```
