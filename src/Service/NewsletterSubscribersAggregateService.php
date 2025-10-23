@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace BlackCat\Database\Packages\NewsletterSubscribers\Service;
 
-use BlackCat\Core\Database\Database;
+use BlackCat\Core\Database;
 use BlackCat\Database\Packages\NewsletterSubscribers\Dto\NewsletterSubscriberDto;
 use BlackCat\Database\Packages\NewsletterSubscribers\Mapper\NewsletterSubscriberDtoMapper;
 use BlackCat\Database\Packages\NewsletterSubscribers\Repository\NewsletterSubscriberRepository;
