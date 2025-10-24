@@ -6,7 +6,7 @@ namespace BlackCat\Database\Packages\NewsletterSubscribers;
 final class Definitions {
     // --- základní metadata ---
     public static function table(): string { return 'newsletter_subscribers'; }
-    public static function contractView(): string { return 'v_newsletter_subscribers_contract'; }
+    public static function contractView(): string { return 'vw_newsletter_subscribers'; }
     /** @return string[] */
     public static function columns(): array { return [ 'id', 'user_id', 'email_hash', 'email_hash_key_version', 'email_enc', 'email_key_version', 'confirm_selector', 'confirm_validator_hash', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_hash', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash', 'ip_hash_key_version', 'meta', 'created_at', 'updated_at' ]; }
     public static function pk(): string { return 'id'; }
