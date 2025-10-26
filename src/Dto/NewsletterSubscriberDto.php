@@ -5,14 +5,14 @@ namespace BlackCat\Database\Packages\NewsletterSubscribers\Dto;
 
 /**
  * Jednoduché, neměnné DTO s veřejnými readonly vlastnostmi.
- * - Žádná logika; pouze nosič dat.
+ * - Bez logiky; pouze nosič dat.
  * - Silné typy drží kontrakt napříč vrstvami.
  */
 final class NewsletterSubscriberDto {
     public function __construct(
         public readonly ?int $id,
         public readonly ?int $userId,
-        public readonly ?string $emailHash,
+        public readonly string $emailHash,
         public readonly ?string $emailHashKeyVersion,
         public readonly ?string $emailEnc,
         public readonly ?string $emailKeyVersion,
@@ -29,12 +29,12 @@ final class NewsletterSubscriberDto {
         public readonly ?string $ipHashKeyVersion,
         public readonly array|null $meta,
         public readonly \DateTimeImmutable $createdAt,
-        public readonly \DateTimeImmutable $updatedAt
+        public readonly \DateTimeImmutable $updatedAt,
+        public readonly int $version
     ) {}
 
-    /** Vhodné pro serializaci/logování (bez binárních/velkých blobů). */
+    /** Vhodné pro serializaci/logování (bez velkých blobů). */
     public function toArray(): array {
-        // get_object_vars funguje dobře s public readonly vlastnostmi
         return get_object_vars($this);
     }
 }

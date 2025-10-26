@@ -1,10 +1,10 @@
--- Auto-generated from schema-map-mysql.psd1 (map@mtime:2025-10-24T09:13:35Z)
+-- Auto-generated from schema-map-mysql.psd1 (map@38d5403)
 -- engine: mysql
 -- table:  newsletter_subscribers
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT UNSIGNED NULL,
-  email_hash BINARY(32) NULL,
+  email_hash BINARY(32) NOT NULL,
   email_hash_key_version VARCHAR(64) NULL,
   email_enc LONGBLOB NULL,
   email_key_version VARCHAR(64) NULL,
@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
   meta JSON DEFAULT NULL,
   created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  version INT UNSIGNED NOT NULL DEFAULT 0,
   UNIQUE KEY ux_ns_email_hash (email_hash),
   UNIQUE KEY ux_ns_confirm_selector (confirm_selector),
   INDEX idx_ns_user (user_id),
