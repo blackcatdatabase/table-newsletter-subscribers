@@ -1,4 +1,4 @@
--- Auto-generated from schema-map-postgres.psd1 (map@38d5403)
+-- Auto-generated from schema-map-postgres.psd1 (map@c5e4097)
 -- engine: postgres
 -- table:  newsletter_subscribers
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (

@@ -1,4 +1,4 @@
--- Auto-generated from schema-views-postgres.psd1 (map@38d5403)
+-- Auto-generated from schema-views-postgres.psd1 (map@c5e4097)
 -- engine: postgres
 -- table:  newsletter_subscribers
 -- Contract view for [newsletter_subscribers]
@@ -26,5 +26,7 @@ SELECT
   ip_hash_key_version,
   meta,
   created_at,
-  updated_at
+  updated_at,
+  version,
+  encode(email_enc, 'hex') AS email_enc_hex
 FROM newsletter_subscribers;
