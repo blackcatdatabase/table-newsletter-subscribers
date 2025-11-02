@@ -1,4 +1,4 @@
--- Auto-generated from schema-map-mysql.psd1 (map@c5e4097)
+-- Auto-generated from schema-map-mysql.psd1 (map@db2f8b8)
 -- engine: mysql
 -- table:  newsletter_subscribers
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
