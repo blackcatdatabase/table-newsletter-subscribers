@@ -1,4 +1,4 @@
--- Auto-generated from schema-views-postgres.psd1 (map@db2f8b8)
+-- Auto-generated from schema-views-postgres.psd1 (map@9d3471b)
 -- engine: postgres
 -- table:  newsletter_subscribers
 -- Contract view for [newsletter_subscribers]
