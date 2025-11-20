@@ -1,7 +1,9 @@
--- Auto-generated from schema-map-postgres.psd1 (map@9d3471b)
+-- Auto-generated from schema-map-postgres.psd1 (map@62c9c93)
 -- engine: postgres
 -- table:  newsletter_subscribers
-CREATE UNIQUE INDEX IF NOT EXISTS ux_ns_email_hash ON newsletter_subscribers (email_hash);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_ns_tenant_email_hash ON newsletter_subscribers (tenant_id, email_hash);
+
+CREATE INDEX IF NOT EXISTS idx_ns_tenant ON newsletter_subscribers (tenant_id);
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_ns_confirm_selector ON newsletter_subscribers (confirm_selector);
 
@@ -10,3 +12,5 @@ CREATE INDEX IF NOT EXISTS idx_ns_user ON newsletter_subscribers (user_id);
 CREATE INDEX IF NOT EXISTS idx_ns_confirm_expires ON newsletter_subscribers (confirm_expires);
 
 CREATE INDEX IF NOT EXISTS idx_ns_unsubscribed_at ON newsletter_subscribers (unsubscribed_at);
+
+CREATE INDEX IF NOT EXISTS idx_ns_confirmed_at ON newsletter_subscribers (confirmed_at);

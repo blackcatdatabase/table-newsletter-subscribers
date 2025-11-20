@@ -3,181 +3,119 @@ declare(strict_types=1);
 
 namespace BlackCat\Database\Packages\NewsletterSubscribers;
 
+use BlackCat\Database\Support\Criteria as BaseCriteria;
+use BlackCat\Core\Database;
+
 /**
- * Bezpečný builder WHERE/ORDER/LIMIT + joiny.
- * - whitelist filtrů: [ 'id', 'user_id', 'email_hash', 'email_hash_key_version', 'email_enc', 'email_key_version', 'confirm_selector', 'confirm_validator_hash', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_hash', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash', 'ip_hash_key_version', 'meta', 'created_at', 'updated_at', 'version' ]
- * - whitelist LIKE:   [ 'email_hash_key_version', 'email_key_version', 'confirm_selector', 'confirm_key_version', 'unsubscribe_token_key_version', 'origin', 'ip_hash_key_version' ]
- * Podporované tvary:
- *   addFilter('status', 'paid');                    // =
- *   addFilter('id', [1,2,3]);                       // IN (...)
- *   where('created_at','>=','2025-01-01');         // operátor
- *   between('created_at','2025-01-01','2025-01-31');
- *   isNull('deleted_at'); isNotNull('deleted_at');
- *   search('foo');                                  // OR přes whitelist
- *   join('LEFT JOIN vw_users u ON u.id = t.user_id', [':x'=>123]);
- *   whereRaw('(t.total - t.discount_total) > :min', [':min'=>0]);
+ * Per-repo Criteria - thin layer on top of the central BlackCat\Database\Support\Criteria.
+ *
+ * Tokens filled by the generator:
+ *  - FILTERABLE_COLUMNS_ARRAY   e.g., ["id","tenant_id","status","created_at"]
+ *  - SEARCHABLE_COLUMNS_ARRAY   e.g., ["order_no","customer_email"]
+ *  - DEFAULT_PER_PAGE           e.g., 50
+ *  - MAX_PER_PAGE               e.g., 500
+ *
+ * All the "hard" logic (dialect, LIKE/ILIKE, NULLS LAST, tenancy, seek, join params,
+ * andWhere()/bind() compatibility, etc.) lives in BaseCriteria. Here we only declare whitelists
+ * and per-repo limits plus an optional fromDb() factory.
  */
-final class Criteria {
-    /** @var array<string,mixed> rovnost/IN */
-    private array $filters = [];
-    /** @var array<int,array{col:string,op:string,val:mixed}> */
-    private array $ops = [];
-    /** @var array<int,array{col:string,from:mixed,to:mixed}> */
-    private array $ranges = [];
-    /** @var array<int,array{col:string,neg:bool}> */
-    private array $nulls = [];
-    /** @var array<int,array{col:string,dir:string}> */
-    private array $sort = [];
-    /** @var array<int,string> */
-    private array $joins = [];
-    /** @var array<string,mixed> */
-    private array $joinParams = [];
-    /** @var array<int,array{sql:string,params:array}> */
-    private array $raw = [];
-
-    private ?string $search = null;
-    private int $page = 1;
-    private int $perPage = 50;
-
-    public function addFilter(string $col, mixed $value): self {
-        $this->filters[$col] = $value; return $this;
-    }
-    public function where(string $col, string $op, mixed $val): self {
-        $this->ops[] = ['col'=>$col,'op'=>strtoupper(trim($op)),'val'=>$val]; return $this;
-    }
-    public function between(string $col, mixed $from, mixed $to): self {
-        $this->ranges[] = ['col'=>$col,'from'=>$from,'to'=>$to]; return $this;
-    }
-    public function isNull(string $col): self {
-        $this->nulls[] = ['col'=>$col,'neg'=>false]; return $this;
-    }
-    public function isNotNull(string $col): self {
-        $this->nulls[] = ['col'=>$col,'neg'=>true]; return $this;
-    }
-    public function whereRaw(string $sql, array $params = []): self {
-        $this->raw[] = ['sql'=>$sql,'params'=>$params]; return $this;
+final class Criteria extends BaseCriteria
+{
+    /** Hard clamp perPage to [1..maxPerPage] for this repo. */
+    protected function perPage(): int
+    {
+        $pp = (int) parent::perPage();
+        $pp = max(1, $pp);
+        return min($pp, $this->maxPerPage());
     }
 
-    public function orderBy(string $col, string $dir = 'ASC'): self {
-        $this->sort[] = ['col'=>$col,'dir'=>$dir]; return $this;
-    }
-    public function search(?string $q): self {
-        $this->search = $q !== null && $q !== '' ? $q : null; return $this;
-    }
-    public function setPage(int $p): self { $this->page = max(1, $p); return $this; }
-    public function setPerPage(int $n): self {
-        $n = max(1, min(500, $n)); $this->perPage = $n; return $this;
+    /** Columns that are safe to use inside WHERE filters. */
+    protected function filterable(): array
+    {
+        return [ 'id', 'tenant_id', 'user_id', 'email_hash', 'email_hash_key_version', 'email_enc', 'email_key_version', 'confirm_selector', 'confirm_validator_hash', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_hash', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash', 'ip_hash_key_version', 'meta', 'created_at', 'updated_at', 'version' ];
     }
 
-    /** Přidej JOIN (string fragment – generátor může vkládat přes Joins třídu). */
-    public function join(string $sqlJoinFragment, array $params = []): self {
-        if ($sqlJoinFragment !== '') { $this->joins[] = $sqlJoinFragment; }
-        foreach ($params as $k=>$v) { $this->joinParams[$k] = $v; }
-        return $this;
+    /** Columns used for full-text LIKE/ILIKE searches. */
+    protected function searchable(): array
+    {
+        return [ 'email_hash_key_version', 'email_key_version', 'confirm_selector', 'confirm_key_version', 'unsubscribe_token_key_version', 'origin', 'ip_hash_key_version' ];
     }
 
-    public function pageNumber(): int { return $this->page; }
-    public function perPage(): int { return $this->perPage; }
-    public function page(): int { return $this->page; }
+    /** Columns allowed in ORDER BY (falls back to filterable() when empty). */
+    protected function sortable(): array
+    {
+        $x = [ 'id', 'tenant_id', 'user_id', 'email_hash_key_version', 'email_key_version', 'confirm_selector', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash_key_version', 'created_at', 'updated_at', 'version' ];
+        return $x ?: $this->filterable();
+    }
 
     /**
-     * @return array{0:string,1:array,2:?string,3:int,4:int,5:string}
+     * Whitelist of joinable entities (for safe ->join() usage):
+     * e.g., [ 'orders' => 'j0', 'users' => 'j1' ]
      */
-    public function toSql(bool $viewMode = false): array {
-        $where = [];
-        $params = [];
-
-        // Pokud jedeme přes view s aliasem "t" (repo volá toSql(true)),
-        // prefiksuj whitelisted sloupce "t." v WHERE, aby nedošlo ke kolizi s JOINy.
-        $ref = static function (string $c) use ($viewMode): string {
-            if ($c === '') { return $c; }
-            // necháme uživatelské výrazy s tečkou být (t.col / j0.col...)
-            if (strpos($c, '.') !== false) { return $c; }
-            return $viewMode ? 't.' . $c : $c;
-        };
-
-        $allowed = array_fill_keys([ 'id', 'user_id', 'email_hash', 'email_hash_key_version', 'email_enc', 'email_key_version', 'confirm_selector', 'confirm_validator_hash', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_hash', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash', 'ip_hash_key_version', 'meta', 'created_at', 'updated_at', 'version' ], true);
-
-        // rovnosti/IN
-        foreach ($this->filters as $col=>$val) {
-            if (!isset($allowed[$col])) { continue; }
-            if (is_array($val) && $val) {
-                $ph = []; $i=0;
-                foreach ($val as $v) { $k=":$col"."_in_$i"; $ph[]=$k; $params[$k]=$v; $i++; }
-                $where[] = $ref($col) . " IN (".implode(',', $ph).")";
-            } elseif ($val === null) {
-                $where[] = $ref($col) . " IS NULL";
-            } else {
-                $k=":$col"; $params[$k]=$val; $where[] = $ref($col) . " = $k";
-            }
-        }
-
-        // operátory
-        foreach ($this->ops as $i=>$o) {
-            [$col,$op,$val] = [$o['col'],$o['op'],$o['val']];
-            if (!isset($allowed[$col])) { continue; }
-            // special-case ILIKE (PG) -> fallback na LIKE
-            if ($op === 'ILIKE') { $op = 'LIKE'; }
-            $k=":op_{$i}_$col"; $params[$k]=$val;
-            $where[] = $ref($col) . " $op $k";
-        }
-
-        // between
-        foreach ($this->ranges as $i=>$r) {
-            $col = $r['col']; if (!isset($allowed[$col])) { continue; }
-            $k1=":b_{$i}_from_$col"; $k2=":b_{$i}_to_$col";
-            $params[$k1]=$r['from']; $params[$k2]=$r['to'];
-            $where[] = $ref($col) . " BETWEEN $k1 AND $k2";
-        }
-
-        // IS NULL / IS NOT NULL
-        foreach ($this->nulls as $n) {
-            $col=$n['col']; if (!isset($allowed[$col])) { continue; }
-            $where[] = $ref($col) . ($n['neg'] ? ' IS NOT NULL' : ' IS NULL');
-        }
-
-        // search přes whitelist LIKE
-        if ($this->search !== null) {
-            $searchCols = [ 'email_hash_key_version', 'email_key_version', 'confirm_selector', 'confirm_key_version', 'unsubscribe_token_key_version', 'origin', 'ip_hash_key_version' ];
-            $likeParts = []; $i=0;
-            foreach ($searchCols as $c) {
-                if ($c === '' || !isset($allowed[$c])) continue;
-                $k=":s$i"; $params[$k] = '%'.$this->search.'%'; $i++;
-                $likeParts[] = $ref($c) . " LIKE $k";
-            }
-            if ($likeParts) { $where[] = '('.implode(' OR ', $likeParts).')'; }
-        }
-
-        // raw
-        foreach ($this->raw as $r) {
-            $where[] = '('.$r['sql'].')';
-            foreach ($r['params'] as $k=>$v) { $params[$k]=$v; }
-        }
-
-        if (!$where) { $where = ['1=1']; }
-
-        // order
-        $order = null;
-        if ($this->sort) {
-            $safeCols = array_fill_keys([ 'id', 'user_id', 'email_hash', 'email_hash_key_version', 'email_enc', 'email_key_version', 'confirm_selector', 'confirm_validator_hash', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_hash', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash', 'ip_hash_key_version', 'meta', 'created_at', 'updated_at', 'version' ], true);
-            $parts = [];
-            foreach ($this->sort as $s) {
-                [$c,$d] = [$s['col'], strtoupper($s['dir'] ?? 'ASC')];
-                if (!isset($safeCols[$c])) { continue; }
-                if (!in_array($d, ['ASC','DESC'], true)) { $d='ASC'; }
-                // ORDER necháváme bez prefixu – escapuje a aliasuje se až v repo->buildOrderBy()
-                $parts[] = "$c $d";
-            }
-            if ($parts) { $order = implode(',', $parts); }
-        }
-
-        $limit = $this->perPage;
-        $offset = ($this->page - 1) * $this->perPage;
-
-        $joins = '';
-        if ($this->joins) { $joins = implode(' ', $this->joins); }
-        if ($this->joinParams) { $params = $this->joinParams + $params; }
-
-        return [implode(' AND ', $where), $params, $order, $limit, $offset, $joins];
+    protected function joinable(): array
+    {
+        /** @var array<string,string> */
+        return [ 'users' => 'j0', 'tenants' => 'j1' ];
     }
+
+    /** Default page size for this repository. */
+    protected function defaultPerPage(): int
+    {
+        return 50;
+    }
+
+    /** Maximum allowed page size. */
+    protected function maxPerPage(): int
+    {
+        return 500;
+    }
+
+    /**
+     * QoL factory: detect dialect based on the PDO driver and optionally apply a tenancy filter.
+     *
+     * Example:
+     *   $crit = Criteria::fromDb($db, tenantId: 42)
+     *                   ->search("foo")
+     *                   ->orderBy("created_at","DESC");
+     */
+    public static function fromDb(
+        Database $db,
+        int|string|array|null $tenantId = null,
+        string $tenantColumn = "tenant_id",
+        bool $quoteIdentifiers = false
+    ): static {
+        $c = new static(); // previously: new self()
+
+        $c->setDialectFromDatabase($db);
+        if ($quoteIdentifiers) { $c->quoteIdentifiers(true); }
+        if ($tenantId !== null) { $c->tenant($tenantId, $tenantColumn); }
+
+        if (\method_exists(\BlackCat\Database\Packages\NewsletterSubscribers\Definitions::class, 'softDeleteColumn')) {
+            $soft = \BlackCat\Database\Packages\NewsletterSubscribers\Definitions::softDeleteColumn();
+            if ($soft) { $c->softDelete($soft); }
+        }
+        return $c;
+    }
+
+    // --- Generated criteria helpers (per table) ---
+    
+    public function byId(int|string $id): self {
+        return $this->where('t.id = :cid', ['cid' => $id]);
+    }
+    public function byIds(array $ids): self {
+        if (!$ids) return $this->where('1=0');
+        return $this->whereIn('t.id', array_values($ids));
+    }
+    /** @param int|string|array<int,int|string> $tenantId */
+    public function forTenant(int|string|array $tenantId): self {
+        if (is_array($tenantId)) { return $this->whereIn('t.tenant_id', $tenantId); }
+        return $this->where('t.tenant_id = :tid', ['tid' => $tenantId]);
+    }
+    public function createdBetween(?\DateTimeInterface $from, ?\DateTimeInterface $to): self {
+        return $this->range('t.created_at', $from, $to);
+    }
+    public function updatedSince(\DateTimeInterface $ts): self {
+        return $this->where('t.updated_at >= :u', ['u' => $ts]);
+    }
+
 }
