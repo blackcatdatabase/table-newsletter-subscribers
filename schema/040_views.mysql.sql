@@ -1,4 +1,4 @@
--- Auto-generated from schema-views-mysql.psd1 (map@db2f8b8)
+-- Auto-generated from schema-views-mysql.psd1 (map@62c9c93)
 -- engine: mysql
 -- table:  newsletter_subscribers
 -- Contract view for [newsletter_subscribers]
@@ -6,7 +6,9 @@
 CREATE OR REPLACE ALGORITHM=MERGE SQL SECURITY INVOKER VIEW vw_newsletter_subscribers AS
 SELECT
   id,
+  tenant_id,
   user_id,
+  email_enc,
   email_hash,
   CAST(LPAD(HEX(email_hash), 64, '0') AS CHAR(64)) AS email_hash_hex,
   email_hash_key_version,
