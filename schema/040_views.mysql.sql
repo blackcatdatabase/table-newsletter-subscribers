@@ -1,6 +1,7 @@
--- Auto-generated from schema-views-mysql.psd1 (map@62c9c93)
+-- Auto-generated from schema-views-mysql.psd1 (map@mtime:2025-11-27T15:35:35Z)
 -- engine: mysql
 -- table:  newsletter_subscribers
+
 -- Contract view for [newsletter_subscribers]
 -- Hides email_enc; adds HEX helpers for hashes.
 CREATE OR REPLACE ALGORITHM=MERGE SQL SECURITY INVOKER VIEW vw_newsletter_subscribers AS
@@ -13,12 +14,10 @@ SELECT
   CAST(LPAD(HEX(email_hash), 64, '0') AS CHAR(64)) AS email_hash_hex,
   email_hash_key_version,
   confirm_selector,
-  confirm_validator_hash,
   CAST(LPAD(HEX(confirm_validator_hash), 64, '0') AS CHAR(64)) AS confirm_validator_hash_hex,
   confirm_key_version,
   confirm_expires,
   confirmed_at,
-  unsubscribe_token_hash,
   CAST(LPAD(HEX(unsubscribe_token_hash), 64, '0') AS CHAR(64)) AS unsubscribe_token_hash_hex,
   unsubscribe_token_key_version,
   unsubscribed_at,

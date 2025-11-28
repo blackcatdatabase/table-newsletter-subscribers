@@ -1,6 +1,7 @@
--- Auto-generated from schema-views-postgres.psd1 (map@62c9c93)
+-- Auto-generated from schema-views-postgres.psd1 (map@mtime:2025-11-27T15:36:13Z)
 -- engine: postgres
 -- table:  newsletter_subscribers
+
 -- Contract view for [newsletter_subscribers]
 -- Hides email_enc; adds hex helpers for hashes.
 CREATE OR REPLACE VIEW vw_newsletter_subscribers AS
@@ -14,12 +15,10 @@ SELECT
   UPPER(encode(email_hash,'hex')) AS email_hash_hex,
   email_hash_key_version,
   confirm_selector,
-  confirm_validator_hash,
   UPPER(encode(confirm_validator_hash,'hex')) AS confirm_validator_hash_hex,
   confirm_key_version,
   confirm_expires,
   confirmed_at,
-  unsubscribe_token_hash,
   UPPER(encode(unsubscribe_token_hash,'hex')) AS unsubscribe_token_hash_hex,
   unsubscribe_token_key_version,
   unsubscribed_at,

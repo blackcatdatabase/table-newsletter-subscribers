@@ -17,7 +17,7 @@ use BlackCat\Database\Support\DtoHydrator;
 final class NewsletterSubscriberDtoMapper
 {
     /** @var array<string,string> Column -> DTO property */
-    private const COL_TO_PROP = [ 'tenant_id' => 'tenantId', 'user_id' => 'userId', 'email_hash' => 'emailHash', 'email_hash_key_version' => 'emailHashKeyVersion', 'email_enc' => 'emailEnc', 'email_key_version' => 'emailKeyVersion', 'confirm_selector' => 'confirmSelector', 'confirm_validator_hash' => 'confirmValidatorHash', 'confirm_key_version' => 'confirmKeyVersion', 'confirm_expires' => 'confirmExpires', 'confirmed_at' => 'confirmedAt', 'unsubscribe_token_hash' => 'unsubscribeTokenHash', 'unsubscribe_token_key_version' => 'unsubscribeTokenKeyVersion', 'unsubscribed_at' => 'unsubscribedAt', 'ip_hash' => 'ipHash', 'ip_hash_key_version' => 'ipHashKeyVersion', 'created_at' => 'createdAt', 'updated_at' => 'updatedAt' ];
+    private const COL_TO_PROP = [ 'id' => 'id', 'tenant_id' => 'tenantId', 'user_id' => 'userId', 'email_hash' => 'emailHash', 'email_hash_key_version' => 'emailHashKeyVersion', 'email_enc' => 'emailEnc', 'email_key_version' => 'emailKeyVersion', 'confirm_selector' => 'confirmSelector', 'confirm_validator_hash' => 'confirmValidatorHash', 'confirm_key_version' => 'confirmKeyVersion', 'confirm_expires' => 'confirmExpires', 'confirmed_at' => 'confirmedAt', 'unsubscribe_token_hash' => 'unsubscribeTokenHash', 'unsubscribe_token_key_version' => 'unsubscribeTokenKeyVersion', 'unsubscribed_at' => 'unsubscribedAt', 'origin' => 'origin', 'ip_hash' => 'ipHash', 'ip_hash_key_version' => 'ipHashKeyVersion', 'meta' => 'meta', 'created_at' => 'createdAt', 'updated_at' => 'updatedAt', 'version' => 'version' ];
 
     /** @var string[] */
     private const BOOL_COLS   = [];
