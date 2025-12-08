@@ -5,25 +5,25 @@ Newsletter subscription registry with double opt-in. email_hash is UNIQUE; confi
 ## Columns
 | Column | Type | Null | Default | Description |
 | --- | --- | --- | --- | --- |
-| confirm_expires | TIMESTAMPTZ(6) | YES | NULL | Confirmation expiry (UTC). |
+| confirm_expires | DATETIME(6) | YES | NULL | Confirmation expiry (UTC). |
 | confirm_key_version | VARCHAR(64) | YES | NULL | Key version for confirmation hash. |
 | confirm_selector | CHAR(12) | YES | NULL | Public selector for confirmation (UNIQUE). |
-| confirm_validator_hash | BYTEA | YES | NULL | Hashed validator token. |
-| confirmed_at | TIMESTAMPTZ(6) | YES | NULL | Confirmation timestamp (UTC). |
-| created_at | TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Creation timestamp (UTC). |
-| email_enc | BYTEA | YES |  | Encrypted email address. |
-| email_hash | BYTEA | NO |  | Hashed email value (UNIQUE). |
+| confirm_validator_hash | BINARY(32) | YES | NULL | Hashed validator token. |
+| confirmed_at | DATETIME(6) | YES | NULL | Confirmation timestamp (UTC). |
+| created_at | DATETIME(6) | NO | CURRENT_TIMESTAMP(6) | Creation timestamp (UTC). |
+| email_enc | LONGBLOB | YES |  | Encrypted email address. |
+| email_hash | BINARY(32) | NO |  | Hashed email value (UNIQUE). |
 | email_hash_key_version | VARCHAR(64) | YES |  | Key version for email_hash. |
 | email_key_version | VARCHAR(64) | YES |  | Key version for email_enc. |
 | id | BIGINT | NO |  | Surrogate primary key. |
-| ip_hash | BYTEA | YES | NULL | Hashed IP of action. |
+| ip_hash | BINARY(32) | YES | NULL | Hashed IP of action. |
 | ip_hash_key_version | VARCHAR(64) | YES | NULL | Key version for ip_hash. |
-| meta | JSONB | YES | NULL | JSON metadata (UTM, tags). |
+| meta | JSON | YES | NULL | JSON metadata (UTM, tags). |
 | origin | VARCHAR(100) | YES | NULL | Acquisition source (e.g., form, import). |
-| unsubscribe_token_hash | BYTEA | YES | NULL | Hashed unsubscribe token. |
+| unsubscribe_token_hash | BINARY(32) | YES | NULL | Hashed unsubscribe token. |
 | unsubscribe_token_key_version | VARCHAR(64) | YES | NULL | Key version for unsubscribe hash. |
-| unsubscribed_at | TIMESTAMPTZ(6) | YES | NULL | Unsubscribe timestamp (UTC). |
-| updated_at | TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Update timestamp (UTC). |
+| unsubscribed_at | DATETIME(6) | YES | NULL | Unsubscribe timestamp (UTC). |
+| updated_at | DATETIME(6) | NO | CURRENT_TIMESTAMP(6) | Update timestamp (UTC). |
 | user_id | BIGINT | YES |  | Related user (optional). |
 
 ## Engine Details
@@ -83,5 +83,5 @@ Foreign keys:
 ## Views
 | View | Engine | Flags | File |
 | --- | --- | --- | --- |
-| vw_newsletter_subscribers | mysql | algorithm=MERGE, security=INVOKER | [packages\newsletter-subscribers\schema\040_views.mysql.sql](https://github.com/blackcatacademy/blackcat-database/packages/newsletter-subscribers/schema/040_views.mysql.sql) |
-| vw_newsletter_subscribers | postgres |  | [packages\newsletter-subscribers\schema\040_views.postgres.sql](https://github.com/blackcatacademy/blackcat-database/packages/newsletter-subscribers/schema/040_views.postgres.sql) |
+| vw_newsletter_subscribers | mysql | algorithm=MERGE, security=INVOKER | [schema\040_views.mysql.sql](schema\040_views.mysql.sql) |
+| vw_newsletter_subscribers | postgres |  | [schema\040_views.postgres.sql](schema\040_views.postgres.sql) |
