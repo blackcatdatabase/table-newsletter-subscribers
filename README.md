@@ -98,11 +98,11 @@ graph LR
 _No engine differences detected._
 
 ## Constraints Snapshot
-- `confirmed_at` – default=NULL
-- `unsubscribe_token_hash` – default=NULL
-- `created_at` – default=CURRENT_TIMESTAMP(6)
 - `confirm_expires` – default=NULL
-- `meta` – default=NULL
+- `confirm_key_version` – default=NULL
+- `confirm_selector` – default=NULL
+- `confirm_validator_hash` – default=NULL
+- `confirmed_at` – default=NULL
 
 ## Schema Files
 | File | Engine |
