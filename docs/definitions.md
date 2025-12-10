@@ -5,26 +5,26 @@ Newsletter subscription registry with double opt-in. email_hash is UNIQUE; confi
 ## Columns
 | Column | Type | Null | Default | Description |
 | --- | --- | --- | --- | --- |
-| confirm_expires | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Confirmation expiry (UTC). |
-| confirm_key_version | VARCHAR(64) | YES | NULL | Key version for confirmation hash. |
-| confirm_selector | CHAR(12) | YES | NULL | Public selector for confirmation (UNIQUE). |
-| confirm_validator_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed validator token. |
 | confirmed_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Confirmation timestamp (UTC). |
-| created_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Creation timestamp (UTC). |
-| email_enc | mysql: LONGBLOB / postgres: BYTEA | YES |  | Encrypted email address. |
-| email_hash | mysql: BINARY(32) / postgres: BYTEA | NO |  | Hashed email value (UNIQUE). |
-| email_hash_key_version | VARCHAR(64) | YES |  | Key version for email_hash. |
-| email_key_version | VARCHAR(64) | YES |  | Key version for email_enc. |
-| id | BIGINT | NO |  | Surrogate primary key. |
-| ip_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed IP of action. |
-| ip_hash_key_version | VARCHAR(64) | YES | NULL | Key version for ip_hash. |
-| meta | mysql: JSON / postgres: JSONB | YES | NULL | JSON metadata (UTM, tags). |
-| origin | VARCHAR(100) | YES | NULL | Acquisition source (e.g., form, import). |
 | unsubscribe_token_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed unsubscribe token. |
-| unsubscribe_token_key_version | VARCHAR(64) | YES | NULL | Key version for unsubscribe hash. |
+| created_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Creation timestamp (UTC). |
+| confirm_expires | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Confirmation expiry (UTC). |
+| email_enc | mysql: LONGBLOB / postgres: BYTEA | YES |  | Encrypted email address. |
+| meta | mysql: JSON / postgres: JSONB | YES | NULL | JSON metadata (UTM, tags). |
+| ip_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed IP of action. |
+| confirm_key_version | VARCHAR(64) | YES | NULL | Key version for confirmation hash. |
+| confirm_validator_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed validator token. |
+| email_hash | mysql: BINARY(32) / postgres: BYTEA | NO |  | Hashed email value (UNIQUE). |
+| email_key_version | VARCHAR(64) | YES |  | Key version for email_enc. |
 | unsubscribed_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Unsubscribe timestamp (UTC). |
+| confirm_selector | CHAR(12) | YES | NULL | Public selector for confirmation (UNIQUE). |
 | updated_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Update timestamp (UTC). |
+| ip_hash_key_version | VARCHAR(64) | YES | NULL | Key version for ip_hash. |
+| origin | VARCHAR(100) | YES | NULL | Acquisition source (e.g., form, import). |
+| email_hash_key_version | VARCHAR(64) | YES |  | Key version for email_hash. |
 | user_id | BIGINT | YES |  | Related user (optional). |
+| id | BIGINT | NO |  | Surrogate primary key. |
+| unsubscribe_token_key_version | VARCHAR(64) | YES | NULL | Key version for unsubscribe hash. |
 
 ## Engine Details
 
