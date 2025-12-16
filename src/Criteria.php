@@ -41,11 +41,11 @@ final class Criteria extends BaseCriteria
         return [ 'email_hash_key_version', 'email_key_version', 'confirm_selector', 'confirm_key_version', 'unsubscribe_token_key_version', 'origin', 'ip_hash_key_version' ];
     }
 
-/** Columns allowed in ORDER BY (falls back to filterable() when empty). */
-protected function sortable(): array
-{
-    return [ 'id', 'tenant_id', 'user_id', 'email_hash_key_version', 'email_key_version', 'confirm_selector', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash_key_version', 'created_at', 'updated_at', 'version' ];
-}
+    /** Columns allowed in ORDER BY (falls back to filterable() when empty). */
+    protected function sortable(): array
+    {
+        return [ 'id', 'tenant_id', 'user_id', 'email_hash_key_version', 'email_key_version', 'confirm_selector', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash_key_version', 'created_at', 'updated_at', 'version' ];
+    }
 
     /**
      * Whitelist of joinable entities (for safe ->join() usage):
