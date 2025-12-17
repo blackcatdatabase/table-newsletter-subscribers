@@ -252,6 +252,7 @@ use OrderByTools, PkTools, RepositoryHelpers;
           ));
           if (!$rows) { return 0; }
 
+          /** @var list<string> $updCols */
           $updCols = [ 'user_id', 'email_hash_key_version', 'email_enc', 'email_key_version', 'confirm_selector', 'confirm_validator_hash', 'confirm_key_version', 'confirm_expires', 'confirmed_at', 'unsubscribe_token_hash', 'unsubscribe_token_key_version', 'unsubscribed_at', 'origin', 'ip_hash', 'ip_hash_key_version', 'meta', 'updated_at', 'version' ];
           if ($updCols && $soft && !in_array($soft, $updCols, true)) { $updCols[] = $soft; }
 
