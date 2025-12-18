@@ -1,0 +1,89 @@
+{
+  "tables": {
+    "newsletter_subscribers": {
+      "columns": {
+        "confirm_expires": {
+          "strategy": "passthrough"
+        },
+        "confirm_key_version": {
+          "strategy": "passthrough"
+        },
+        "confirm_selector": {
+          "strategy": "passthrough"
+        },
+        "confirm_validator_hash": {
+          "context": "db.hmac.newsletter_subscribers.confirm_validator_hash",
+          "key_version_column": "confirm_key_version",
+          "strategy": "hmac",
+          "write_key_version": true
+        },
+        "confirmed_at": {
+          "strategy": "passthrough"
+        },
+        "created_at": {
+          "strategy": "passthrough"
+        },
+        "email_enc": {
+          "context": "db.vault.newsletter_subscribers.email_enc",
+          "key_version_column": "email_key_version",
+          "strategy": "encrypt",
+          "write_key_version": true
+        },
+        "email_hash": {
+          "context": "db.hmac.newsletter_subscribers.email_hash",
+          "key_version_column": "email_hash_key_version",
+          "strategy": "hmac",
+          "write_key_version": true
+        },
+        "email_hash_key_version": {
+          "strategy": "passthrough"
+        },
+        "email_key_version": {
+          "strategy": "passthrough"
+        },
+        "id": {
+          "strategy": "passthrough"
+        },
+        "ip_hash": {
+          "context": "db.hmac.newsletter_subscribers.ip_hash",
+          "key_version_column": "ip_hash_key_version",
+          "strategy": "hmac",
+          "write_key_version": true
+        },
+        "ip_hash_key_version": {
+          "strategy": "passthrough"
+        },
+        "meta": {
+          "strategy": "passthrough"
+        },
+        "origin": {
+          "strategy": "passthrough"
+        },
+        "tenant_id": {
+          "strategy": "passthrough"
+        },
+        "unsubscribe_token_hash": {
+          "context": "db.hmac.newsletter_subscribers.unsubscribe_token_hash",
+          "key_version_column": "unsubscribe_token_key_version",
+          "strategy": "hmac",
+          "write_key_version": true
+        },
+        "unsubscribe_token_key_version": {
+          "strategy": "passthrough"
+        },
+        "unsubscribed_at": {
+          "strategy": "passthrough"
+        },
+        "updated_at": {
+          "strategy": "passthrough"
+        },
+        "user_id": {
+          "strategy": "passthrough"
+        },
+        "version": {
+          "strategy": "passthrough"
+        }
+      }
+    }
+  }
+}

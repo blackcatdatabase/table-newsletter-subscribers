@@ -3,28 +3,30 @@
 Newsletter subscription registry with double opt-in. email_hash is UNIQUE; confirm_selector is UNIQUE.
 
 ## Columns
-| Column | Type | Null | Default | Description |
-| --- | --- | --- | --- | --- |
-| id | BIGINT | NO |  | Surrogate primary key. |
-| user_id | BIGINT | YES |  | Related user (optional). |
-| email_hash | mysql: BINARY(32) / postgres: BYTEA | NO |  | Hashed email value (UNIQUE). |
-| email_hash_key_version | VARCHAR(64) | YES |  | Key version for email_hash. |
-| email_enc | mysql: LONGBLOB / postgres: BYTEA | YES |  | Encrypted email address. |
-| email_key_version | VARCHAR(64) | YES |  | Key version for email_enc. |
-| confirm_selector | CHAR(12) | YES | NULL | Public selector for confirmation (UNIQUE). |
-| confirm_validator_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed validator token. |
-| confirm_key_version | VARCHAR(64) | YES | NULL | Key version for confirmation hash. |
-| confirm_expires | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Confirmation expiry (UTC). |
-| confirmed_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Confirmation timestamp (UTC). |
-| unsubscribe_token_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed unsubscribe token. |
-| unsubscribe_token_key_version | VARCHAR(64) | YES | NULL | Key version for unsubscribe hash. |
-| unsubscribed_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Unsubscribe timestamp (UTC). |
-| origin | VARCHAR(100) | YES | NULL | Acquisition source (e.g., form, import). |
-| ip_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed IP of action. |
-| ip_hash_key_version | VARCHAR(64) | YES | NULL | Key version for ip_hash. |
-| meta | mysql: JSON / postgres: JSONB | YES | NULL | JSON metadata (UTM, tags). |
-| created_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Creation timestamp (UTC). |
-| updated_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Update timestamp (UTC). |
+| Column | Type | Null | Default | Description | Crypto |
+| --- | --- | --- | --- | --- | --- |
+| id | BIGINT | NO |  | Surrogate primary key. |  |
+| tenant_id | BIGINT | NO |  | Owning tenant (FK tenants.id). |  |
+| user_id | BIGINT | YES |  | Related user (optional). |  |
+| email_hash | mysql: BINARY(32) / postgres: BYTEA | NO |  | Hashed email value (UNIQUE). | `hmac`<br/>ctx: `db.hmac.newsletter_subscribers.email_hash`<br/>kv: `email_hash_key_version` |
+| email_hash_key_version | VARCHAR(64) | YES |  | Key version for email_hash. | key version for: `email_hash` |
+| email_enc | mysql: LONGBLOB / postgres: BYTEA | YES |  | Encrypted email address. | `encrypt`<br/>ctx: `db.vault.newsletter_subscribers.email_enc`<br/>kv: `email_key_version` |
+| email_key_version | VARCHAR(64) | YES |  | Key version for email_enc. | key version for: `email_enc` |
+| confirm_selector | CHAR(12) | YES | NULL | Public selector for confirmation (UNIQUE). |  |
+| confirm_validator_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed validator token. | `hmac`<br/>ctx: `db.hmac.newsletter_subscribers.confirm_validator_hash`<br/>kv: `confirm_key_version` |
+| confirm_key_version | VARCHAR(64) | YES | NULL | Key version for confirmation hash. | key version for: `confirm_validator_hash` |
+| confirm_expires | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Confirmation expiry (UTC). |  |
+| confirmed_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Confirmation timestamp (UTC). |  |
+| unsubscribe_token_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed unsubscribe token. | `hmac`<br/>ctx: `db.hmac.newsletter_subscribers.unsubscribe_token_hash`<br/>kv: `unsubscribe_token_key_version` |
+| unsubscribe_token_key_version | VARCHAR(64) | YES | NULL | Key version for unsubscribe hash. | key version for: `unsubscribe_token_hash` |
+| unsubscribed_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | YES | NULL | Unsubscribe timestamp (UTC). |  |
+| origin | VARCHAR(100) | YES | NULL | Acquisition source (e.g., form, import). |  |
+| ip_hash | mysql: BINARY(32) / postgres: BYTEA | YES | NULL | Hashed IP of action. | `hmac`<br/>ctx: `db.hmac.newsletter_subscribers.ip_hash`<br/>kv: `ip_hash_key_version` |
+| ip_hash_key_version | VARCHAR(64) | YES | NULL | Key version for ip_hash. | key version for: `ip_hash` |
+| meta | mysql: JSON / postgres: JSONB | YES | NULL | JSON metadata (UTM, tags). |  |
+| created_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Creation timestamp (UTC). |  |
+| updated_at | mysql: DATETIME(6) / postgres: TIMESTAMPTZ(6) | NO | CURRENT_TIMESTAMP(6) | Update timestamp (UTC). |  |
+| version | mysql: INT / postgres: INTEGER | NO | 0 | Optimistic locking version counter. |  |
 
 ## Engine Details
 
