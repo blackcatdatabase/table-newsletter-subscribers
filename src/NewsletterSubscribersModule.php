@@ -127,8 +127,8 @@ SQL;
         $hasTable = SchemaIntrospector::hasTable($db, $d, $table);
         $hasView  = SchemaIntrospector::hasView($db, $d, $view);
 
-        // Quick index/FK check â€“ generator injects names (case-sensitive per DB)
-        $expectedIdx = [];
+        // Quick index/FK check - generator injects names (case-sensitive per DB)
+        $expectedIdx = [ 'idx_ns_confirm_expires', 'idx_ns_confirmed_at', 'idx_ns_tenant', 'idx_ns_unsubscribed_at', 'idx_ns_user' ];
         if ($d->isMysql()) {
             // Drop PG-only index naming patterns (e.g., GIN/GiST)
             $expectedIdx = array_values(array_filter(
@@ -161,7 +161,7 @@ SQL;
             'columns'     => Definitions::columns(),
             'version'     => $this->version(),
             'dialects'    => [ 'mysql', 'postgres' ],
-            'indexes'     => [],
+            'indexes'     => [ 'idx_ns_confirm_expires', 'idx_ns_confirmed_at', 'idx_ns_tenant', 'idx_ns_unsubscribed_at', 'idx_ns_user' ],
             'foreignKeys' => [ 'fk_ns_tenant', 'fk_ns_user' ],
         ];
     }
